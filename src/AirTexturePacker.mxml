@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   initialize="main()">
+	<fx:Script>
+		<![CDATA[
+			import dataload.PackageBmpDataLoader;
+			import dataload.PackageLoaderEvent;
+			import dataload.PackageSaver;
+			
+			import org.villekoskela.tools.ScalingBox;
+			import org.villekoskela.utils.RectanglePacker;
+			
+			
+			private var _atlas:BitmapData;
+			private var _xml:String;
+			
+			private var mPacker:RectanglePacker;
+			
+			private var mRectangles:Vector.<Rectangle> = new Vector.<Rectangle>();
+			
+			private var _pictures:Dictionary;
+			private var _picNums:Dictionary = new Dictionary();
+			
+			private var _file:File;
+			
+
+			protected function main():void
+			{
+				addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);				
+				_file = File.applicationDirectory;
+				var load:PackageBmpDataLoader = new PackageBmpDataLoader(_file);
+				load.addEventListener(PackageLoaderEvent.LOAD_COMPLETE, onDirOpened);
+			}
+			
+			public function onDirOpened(event:PackageLoaderEvent):void
+			{
+				_pictures = event.loader.pictures;
+				startPacking();
+			}
+			
+			public function startPacking():void
+			{
+				var currBmpData:BitmapData;
+				for (var name:String in _pictures)
+				{
+					if (name == _file.name)
+						continue;
+					currBmpData = _pictures[name];
+					mRectangles.push(new Rectangle(0,0,currBmpData.width, currBmpData.height));
+					_picNums[mRectangles.length - 1] = name;
+				}
+				
+				_xml = '<TextureAtlas imagePath="'+ _file.name + '">';
+				//set your size, if you want
+				mPacker = new RectanglePacker(1024, 1024, 0);
+				
+				for (var i:int = 0; i < mRectangles.length; i++)
+					mPacker.insertRectangle(mRectangles[i].width, mRectangles[i].height, i);
+			
+				mPacker.packRectangles();
+				
+				if (mPacker.rectangleCount > 0)
+				{	
+					_atlas = new BitmapData(mPacker.maximumSize.x, mPacker.maximumSize.y, true, 0xFFFFFF);
+					var rect:Rectangle = new Rectangle();
+					for (var j:int = 0; j < mPacker.rectangleCount; j++)
+					{
+						mPacker.getRectangle(j, rect);
+						var index:int = mPacker.getRectangleId(j);	
+						_atlas.copyPixels(_pictures[_picNums[index]],mRectangles[index], rect.topLeft);
+						
+						_xml = _xml + '<SubTexture name="' + _picNums[index] + '" x="' + rect.x + '" y="' +
+							+ rect.y + '" width="' + mRectangles[index].width + '" height="' + mRectangles[index].height + '"/>;';
+					}
+				}
+				else
+					return;
+				
+				_xml = _xml + '</TextureAtlas>';
+				PackageSaver.saveAtlas(_file.name, _file.nativePath, _atlas, _xml);
+			}
+			
+			
+			
+			
+			private function onAddedToStage(event:Event):void
+			{
+				stage.scaleMode = StageScaleMode.NO_SCALE;
+				stage.align = StageAlign.TOP;
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<s:SpriteVisualElement id="mainCont" />
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+</s:WindowedApplication>
