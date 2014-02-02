@@ -25,7 +25,7 @@ package dataload
 		//
 		//---------------------------------------------------------------
 		
-		private var _file:File;
+		private var _source:File;
 		private var _fileCounter:int = 0;
 		private var _loadStarted:Boolean = false;
 		
@@ -37,13 +37,18 @@ package dataload
 		// Construct
 		//
 		//---------------------------------------------------------------
-		public function PackageBmpDataLoader(file:File, inDirectories:Boolean = true)
+		public function PackageBmpDataLoader(file:File, packageName:String, inDirectories:Boolean = true)
 		{
 			super(null);
-			
-			_file = file;
+	
 			_inDirectories = inDirectories;
-			mainFileLoad(_file);
+			
+			var _files:Array = file.getDirectoryListing();
+			for (var i:int = 0; i < _files.length; i++) 
+			{
+				if ((_files[i] as File).name == packageName)
+					mainFileLoad( _source = _files[i]);
+			}
 			
 			_loadStarted = true;
 			checkForLoaded();

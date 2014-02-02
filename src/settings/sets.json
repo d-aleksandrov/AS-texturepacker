@@ -1,0 +1,6 @@
+{
+	"input"				: "resources",
+	"output"			: "OUT_DIR",
+	"maxAtlasSize"		: [1024, 1024],
+	"useSubDirectories" : true
+}
