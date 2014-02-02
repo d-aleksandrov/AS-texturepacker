@@ -6,6 +6,8 @@ package dataload
 	import flash.filesystem.FileStream;
 	
 	import mx.graphics.codec.PNGEncoder;
+	
+	import settings.AppSets;
 
 	public class PackageSaver
 	{
@@ -24,14 +26,14 @@ package dataload
 		public static function saveAtlas(name:String, path:String, atlas:BitmapData, xml:String):void
 		{
 			var fs : FileStream = new FileStream();
-			var targetFile : File = new File(path + '\\OUT\\' + name + '.png');
+			var targetFile : File = new File(path + '\\' + AppSets.sets.outputDirectoryName + '\\' + name + '.png');
 			fs.open(targetFile, FileMode.WRITE);
 			fs.writeBytes(new PNGEncoder().encode(atlas));
 			fs.close();
 			
 			
 			fs = new FileStream();
-			targetFile = new File(path + '\\OUT\\' + name + '.xml');
+			targetFile = new File(path + '\\' + AppSets.sets.outputDirectoryName +'\\' + name + '.xml');
 			fs.open(targetFile, FileMode.WRITE);
 			fs.writeUTFBytes(xml);
 			fs.close();

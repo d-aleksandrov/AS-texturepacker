@@ -19,6 +19,11 @@ package dataload
 		
 		protected var _inDirectories:Boolean;
 		
+		public function get pictures():Dictionary
+		{
+			return _pictures;
+		}
+		
 		//---------------------------------------------------------------
 		//
 		// Components
@@ -29,7 +34,6 @@ package dataload
 		private var _fileCounter:int = 0;
 		private var _loadStarted:Boolean = false;
 		
-	//	private var _pictures:Vector.<BitmapData> = new Vector.<BitmapData>;
 		private var _pictures:Dictionary = new Dictionary();
 		
 		//---------------------------------------------------------------
@@ -66,17 +70,6 @@ package dataload
 		//
 		//---------------------------------------------------------------
 		
-		//---------------------------------------------------------------
-		//
-		// Handlers
-		//
-		//---------------------------------------------------------------
-		
-		public function get pictures():Dictionary
-		{
-			return _pictures;
-		}
-
 		public function mainFileLoad(inpFile:File):void
 		{
 			var _files:Array = inpFile.getDirectoryListing();
@@ -102,6 +95,12 @@ package dataload
 			}	
 			
 		}
+		
+		//---------------------------------------------------------------
+		//
+		// Handlers
+		//
+		//---------------------------------------------------------------		
 		
 		public function onFileLoad(event:Event):void
 		{
